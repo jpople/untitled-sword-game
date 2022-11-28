@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float horizontalVelocity = 0f;
     public float horizAcceleration;
+    int movementDirection;
 
     public float verticalVelocity = 0f;
     public float jumpForce;
@@ -33,39 +35,12 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         animator.ResetTrigger("Attack");
-        animator.ResetTrigger("Jump");
     }
 
     // Update is called once per frame
     void Update()
-    {
-        if(Input.GetKey("d") && !isAttacking) {
-            horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (Input.GetKey("a") && !isAttacking) {
-            horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, -MAX_HORIZONTAL_SPEED, 0);
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else {
-            if (horizontalVelocity < 0) {
-                horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, -MAX_HORIZONTAL_SPEED, 0);
-            }
-            else if (horizontalVelocity > 0) {
-                horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
-            }
-        }
-
-        if(Input.GetKeyDown("f")) {
-            animator.SetTrigger("Attack");
-            isAttacking = true;
-            StartCoroutine(Attack());
-        }
-
-        if(isGrounded && Input.GetKeyDown("space")) {
-            Debug.Log("jumping...");
-            verticalVelocity = jumpForce;
-        }
+    {   
+        HandleMove();
 
         animator.SetFloat("Speed", Mathf.Abs(horizontalVelocity));
         animator.SetFloat("VertSpeed", verticalVelocity);
@@ -88,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Bump() {
-        horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x / 2;
+        horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x;
     }
 
     void CheckHitbox() {
@@ -108,6 +83,71 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    #region ActionHandling
+
+    public void HandleMove() {
+        if (movementDirection == 1 && !isAttacking) {
+            horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (movementDirection == -1 && !isAttacking) {
+            horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, -MAX_HORIZONTAL_SPEED, 0);
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else {
+            if (horizontalVelocity < 0) {
+                horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, -MAX_HORIZONTAL_SPEED, 0);
+            }
+            else if (horizontalVelocity > 0) {
+                horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
+            }
+        }
+    }
+
+    public void HandleAttack() {
+        animator.SetTrigger("Attack");
+        isAttacking = true;
+        StartCoroutine(Attack());
+    }
+
+    public void HandleJump() {
+        if(isGrounded) {
+            verticalVelocity = jumpForce;
+        }
+    }
+    
+    #endregion
+
+    #region InputHandling
+
+    public void OnMoveInput(InputAction.CallbackContext c) {
+        float movementX = c.ReadValue<Vector2>().x;
+        Debug.Log($"moving x = {movementX}");
+        if (movementX > 0.1) {
+            movementDirection = 1;
+        }
+        else if (movementX < -0.1) {
+            movementDirection = -1;
+        }
+        else {
+            movementDirection = 0;
+        }
+    }
+
+    public void OnJumpInput(InputAction.CallbackContext c) {
+        if (c.started) {
+            HandleJump();
+        }
+    }
+
+    public void OnAttackInput(InputAction.CallbackContext c) {
+        if (c.started) {
+            HandleAttack();
+        }
+    }
+
+    #endregion
+
     void PlayAttackSound() {
         attackSound.Play();
     }
@@ -117,9 +157,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void GroundedCheck() {
+        bool startedGrounded = isGrounded;
         List<Collider2D> results = new List<Collider2D>();
         ContactFilter2D noFilter = new ContactFilter2D();
         int hitGround = groundedBox.OverlapCollider(noFilter.NoFilter(), results);
         isGrounded = hitGround > 1 && verticalVelocity <= 0;
+        if (!startedGrounded) {
+            PlayFootstepSound();
+        }
     }
 }

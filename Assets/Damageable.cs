@@ -19,13 +19,13 @@ public class Damageable : MonoBehaviour
     float currentHP;
     [SerializeField] StatusBar hpBar;
 
-    AudioSource audio;
+    AudioSource source;
     [SerializeField] AudioClip hitSound;
 
     [SerializeField] Animator anim;
 
     private void Awake() {
-        audio = GetComponent<AudioSource>();
+        source = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -52,7 +52,7 @@ public class Damageable : MonoBehaviour
     public void GetHit() {
         recoveringPosture = false;
         timeSinceEngagement = 0f;
-        audio.PlayOneShot(hitSound);
+        source.PlayOneShot(hitSound);
         ChangeHP(-10);
         ChangePosture(-20);
         anim.CrossFade("Dummy_Hit", 0.0f);
