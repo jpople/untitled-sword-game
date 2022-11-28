@@ -919,6 +919,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1054166710}
   - component: {fileID: 1054166711}
+  - component: {fileID: 1054166712}
+  - component: {fileID: 1054166713}
   m_Layer: 6
   m_Name: ExecutionMarker
   m_TagString: Untagged
@@ -993,6 +995,40 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &1054166712
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054166709}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c260bef15ddc7c34ab707c0813be3f80, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1054166713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054166709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90fb6ec07760eb94292598e10171cc1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 1054166712}
+  targeted: 0
 --- !u!1 &1315268389
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,7 +1287,8 @@ MonoBehaviour:
   hitSoundDefault: {fileID: 8300000, guid: e2c61b605ec2e0b4bb8a94a7ae8cf193, type: 3}
   hitSoundBlocked: {fileID: 8300000, guid: 4977ba997a9c5684492987214db0293b, type: 3}
   anim: {fileID: 1415584760}
-  executionMark: {fileID: 1054166709}
+  executionMark: {fileID: 1054166713}
+  targetedForExecution: 0
   behavior: 0
 --- !u!82 &1415584759
 AudioSource:

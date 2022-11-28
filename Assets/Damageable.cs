@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Damageable : MonoBehaviour
 {
+    bool isInvulnerable;
+
     float currentPosture;
     float maxPosture = 100;
     float basePostureRecovery = 0.01f;
@@ -16,7 +18,7 @@ public class Damageable : MonoBehaviour
     float recoveryModifier = 1.0f; // recovery slows when HP is low
     bool recoveringPosture;
 
-    float postureBreakDuration = 2f;
+    float postureBreakDuration = 3f;
     float timeLeftBroken = 0f;
 
     float maxHP = 100;
@@ -29,7 +31,8 @@ public class Damageable : MonoBehaviour
 
     [SerializeField] Animator anim;
 
-    [SerializeField] GameObject executionMark;
+    [SerializeField] ExecutionMark executionMark;
+    public bool targetedForExecution;
 
     // [SerializeField] TextMeshProUGUI debugText;
 
@@ -68,10 +71,12 @@ public class Damageable : MonoBehaviour
                 timeLeftBroken = 0;
             }
         }
+
+        executionMark.targeted = targetedForExecution;
     }
 
     public void GetHit() {
-        if(currentHP < 0) {
+        if(currentHP <= 0) {
             BreakPosture();
         }
         recoveringPosture = false;
@@ -91,23 +96,28 @@ public class Damageable : MonoBehaviour
             default:
                 break;
         }
-        if(behavior != State.BROKEN && currentPosture < 0) {
+        if(currentPosture < 0) {
             BreakPosture();
         }
     }
 
+    public void GetExecuted() {
+        SetPosture(maxPosture);
+        SetHP(maxHP);
+    }
+
     public void BreakPosture() {
-        behavior = State.BROKEN;
-        timeLeftBroken = postureBreakDuration;
-        executionMark.SetActive(true);
-        Debug.Log("breaking posture!");
+        if(behavior != State.BROKEN) {
+            behavior = State.BROKEN;
+            timeLeftBroken = postureBreakDuration;
+            executionMark.gameObject.SetActive(true);
+        }
     }
 
     public void UnbreakPosture() {
         behavior = State.IDLE;
         SetPosture(maxPosture);
-        executionMark.SetActive(false);
-        Debug.Log("unbreaking posture!");
+        executionMark.gameObject.SetActive(false);
     }
 
     public void SetPosture(float value) {

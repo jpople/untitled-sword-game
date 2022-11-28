@@ -31,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     AudioClip[] footsteps;
 
+    Damageable lastFrameExecutionTarget;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {   
         HandleMove();
+        ExecutionTargetCheck();
 
         animator.SetFloat("Speed", Mathf.Abs(horizontalVelocity));
         animator.SetFloat("VertSpeed", verticalVelocity);
@@ -65,6 +68,8 @@ public class PlayerMovement : MonoBehaviour
     void Bump() {
         horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x * 2;
     }
+
+    #region GameLogic
 
     void CheckHitbox() {
         List<Collider2D> results = new List<Collider2D>();
@@ -94,6 +99,33 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void ExecutionTargetCheck() {
+        LayerMask mask = LayerMask.GetMask("Enemy");
+        RaycastHit2D h = Physics2D.Raycast(transform.position, new Vector2(transform.localScale.x, 0), 1f, mask);
+        if (h.collider != null) {
+            Damageable frontEnemy = h.collider.gameObject.GetComponent<Damageable>();
+            if (frontEnemy.behavior == Damageable.State.BROKEN) {
+                if (lastFrameExecutionTarget == null) {
+                    lastFrameExecutionTarget = frontEnemy;
+                    frontEnemy.targetedForExecution = true;
+                }
+                else if (lastFrameExecutionTarget != frontEnemy) {
+                    lastFrameExecutionTarget.targetedForExecution = false;
+                    frontEnemy.targetedForExecution = true;
+                    lastFrameExecutionTarget = frontEnemy;
+                }
+            }
+        }
+        else {
+            if (lastFrameExecutionTarget != null) {
+                lastFrameExecutionTarget.targetedForExecution = false;
+                lastFrameExecutionTarget = null;
+            }
+        }
+    }
+
+    #endregion
+
     #region ActionHandling
 
     public void HandleMove() {
@@ -116,23 +148,16 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void HandleAttack() {
-        // currently this one only handles one at a time
-        // there are other raycast functions, look into this
-        LayerMask mask = LayerMask.GetMask("Enemy");
-        RaycastHit2D h = Physics2D.Raycast(transform.position, new Vector2(transform.localScale.x, 0), 1f, mask);
-        if (h != null) {
-            Debug.Log(h.collider.gameObject.name);
-            Damageable enemy = h.collider.gameObject.GetComponent<Damageable>();
-            if(enemy != null) {
-                if (enemy.behavior == Damageable.State.BROKEN) {
-                    Debug.Log("executing...");
-                } 
+        if (isGrounded && !isAttacking) {
+            if (lastFrameExecutionTarget != null) {
+                Debug.Log("executing...");
+            }
+            else {
+                animator.SetTrigger("Attack");
+                isAttacking = true;
+                StartCoroutine(Attack());
             }
         }
-
-        animator.SetTrigger("Attack");
-        isAttacking = true;
-        StartCoroutine(Attack());
     }
 
     public void HandleJump() {
@@ -165,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void OnAttackInput(InputAction.CallbackContext c) {
-        if (c.started && isGrounded) {
+        if (c.started) {
             HandleAttack();
         }
     }
