@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class Damageable : MonoBehaviour
 {
@@ -20,9 +21,15 @@ public class Damageable : MonoBehaviour
     [SerializeField] StatusBar hpBar;
 
     AudioSource source;
-    [SerializeField] AudioClip hitSound;
+    [SerializeField] AudioClip hitSoundDefault;
+    [SerializeField] AudioClip hitSoundBlocked;
 
     [SerializeField] Animator anim;
+
+    enum State {IDLE, BLOCKING, PARRYING}
+    State behavior;
+
+    [SerializeField] bool isBlocking;
 
     private void Awake() {
         source = GetComponent<AudioSource>();
@@ -32,6 +39,7 @@ public class Damageable : MonoBehaviour
     {
         SetHP(maxHP);
         SetPosture(maxPosture);
+        behavior = State.IDLE;
     }
 
     private void Update() {
@@ -47,24 +55,38 @@ public class Damageable : MonoBehaviour
             timeSinceEngagement += Time.deltaTime;
             recoveringPosture = timeSinceEngagement > recoveryDelay;
         }
+
+        if (isBlocking) {
+            behavior = State.BLOCKING;
+        }
+        else {
+            behavior = State.IDLE;
+        }
     }
 
     public void GetHit() {
         recoveringPosture = false;
         timeSinceEngagement = 0f;
-        source.PlayOneShot(hitSound);
-        ChangeHP(-10);
-        ChangePosture(-20);
-        anim.CrossFade("Dummy_Hit", 0.0f);
+        switch(behavior) {
+            case State.IDLE:
+                source.PlayOneShot(hitSoundDefault);
+                ChangeHP(-10);
+                ChangePosture(-20);
+                anim.CrossFade("Dummy_Hit", 0.0f);
+                break;
+            case State.BLOCKING:
+                source.PlayOneShot(hitSoundBlocked);
+                ChangePosture(-20);
+                anim.CrossFade("Dummy_Block", 0.0f);
+                break;
+            default:
+                break;
+        }
     }
 
-    public void GetHitBlocked() {
-        timeSinceEngagement = 0f;
-
-    }
-
-    public void GetHitParried() {
-        timeSinceEngagement = 0f;
+    public void ChangeBehavior(int value) {
+        behavior = (State)value;
+        Debug.Log($"new behavior: {behavior}");
     }
 
     // gross

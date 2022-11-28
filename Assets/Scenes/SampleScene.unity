@@ -168,9 +168,9 @@ MonoBehaviour:
   groundedBox: {fileID: 965710614}
   attackSound: {fileID: 84032740}
   footsteps:
-  - {fileID: 8300000, guid: 256284c585250524c99ea30e975fc2f9, type: 3}
-  - {fileID: 8300000, guid: 2331dc4077c4692478cf8abba8cc5109, type: 3}
-  - {fileID: 8300000, guid: 099bab200d43b324cb094841fc075d92, type: 3}
+  - {fileID: 8300000, guid: 91f17b92281e47342bb773e7ab132a0e, type: 3}
+  - {fileID: 8300000, guid: 1ddfcfa2fcdedd14fa5c4c32a961f598, type: 3}
+  - {fileID: 8300000, guid: 27edaea35e3c2e24abf0acde8d943556, type: 3}
 --- !u!212 &84032735
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -432,13 +432,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 84032734}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-<<<<<<< HEAD
-        m_MethodName: HandleMove
-        m_Mode: 1
-=======
         m_MethodName: OnMoveInput
         m_Mode: 0
->>>>>>> dummy-behavior
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -453,13 +448,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 84032734}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-<<<<<<< HEAD
-        m_MethodName: HandleAttack
-        m_Mode: 1
-=======
         m_MethodName: OnAttackInput
         m_Mode: 0
->>>>>>> dummy-behavior
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -474,13 +464,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 84032734}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-<<<<<<< HEAD
-        m_MethodName: HandleJump
-        m_Mode: 1
-=======
         m_MethodName: OnJumpInput
         m_Mode: 0
->>>>>>> dummy-behavior
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1042,8 +1027,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   postureBar: {fileID: 700842330}
   hpBar: {fileID: 228559967}
-  hitSound: {fileID: 8300000, guid: e2c61b605ec2e0b4bb8a94a7ae8cf193, type: 3}
+  hitSoundDefault: {fileID: 8300000, guid: e2c61b605ec2e0b4bb8a94a7ae8cf193, type: 3}
+  hitSoundBlocked: {fileID: 8300000, guid: 4977ba997a9c5684492987214db0293b, type: 3}
   anim: {fileID: 1415584760}
+  isBlocking: 0
 --- !u!82 &1415584759
 AudioSource:
   m_ObjectHideFlags: 0
