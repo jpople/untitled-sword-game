@@ -63,7 +63,11 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Bump() {
+<<<<<<< HEAD
         horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x;
+=======
+        horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x * 2;
+>>>>>>> dummy-behavior
     }
 
     void CheckHitbox() {
@@ -141,7 +145,11 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void OnAttackInput(InputAction.CallbackContext c) {
+<<<<<<< HEAD
         if (c.started) {
+=======
+        if (c.started && isGrounded) {
+>>>>>>> dummy-behavior
             HandleAttack();
         }
     }

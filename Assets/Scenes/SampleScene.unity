@@ -432,8 +432,13 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 84032734}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+<<<<<<< HEAD
         m_MethodName: HandleMove
         m_Mode: 1
+=======
+        m_MethodName: OnMoveInput
+        m_Mode: 0
+>>>>>>> dummy-behavior
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -448,8 +453,13 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 84032734}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+<<<<<<< HEAD
         m_MethodName: HandleAttack
         m_Mode: 1
+=======
+        m_MethodName: OnAttackInput
+        m_Mode: 0
+>>>>>>> dummy-behavior
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -464,8 +474,13 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 84032734}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+<<<<<<< HEAD
         m_MethodName: HandleJump
         m_Mode: 1
+=======
+        m_MethodName: OnJumpInput
+        m_Mode: 0
+>>>>>>> dummy-behavior
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
