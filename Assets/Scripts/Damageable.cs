@@ -82,10 +82,19 @@ public class Damageable : MonoBehaviour
         }
         recoveringPosture = false;
         timeSinceEngagement = 0f;
+        if(behavior != State.BROKEN) {
+            int flip = Random.Range(0, 2);
+            if(flip == 1) {
+                behavior = State.IDLE;
+            }
+            else {
+                behavior = State.BLOCKING;
+            }
+        }
         switch(behavior) {
             case State.IDLE:
                 source.PlayOneShot(hitSoundDefault);
-                SetHP(currentHP - 10);
+                SetHP(currentHP - 30);
                 SetPosture(currentPosture - 20);
                 anim.CrossFade("Dummy_Hit", 0.0f);
                 break;
@@ -97,7 +106,7 @@ public class Damageable : MonoBehaviour
             default:
                 break;
         }
-        if(currentPosture < 0) {
+        if(currentPosture < 1) {
             BreakPosture();
         }
     }
@@ -106,6 +115,9 @@ public class Damageable : MonoBehaviour
         SetPosture(maxPosture);
         SetHP(maxHP);
         source.PlayOneShot(hitSoundDefault);
+        anim.CrossFade("Dummy_Death", 0.0f);
+        postureBar.gameObject.SetActive(false);
+        hpBar.gameObject.SetActive(false);
         UnbreakPosture();
     }
 

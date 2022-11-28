@@ -162,7 +162,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void HandleExecute() {
-        Debug.Log($"executing {lastFrameExecutionTarget.gameObject.name}...");
         transform.position = lastFrameExecutionTarget.gameObject.transform.position - (EXECUTION_OFFSET * transform.localScale.x);
         animator.CrossFade("Player_Execute", 0.0f);
         lastFrameExecutionTarget = null;
