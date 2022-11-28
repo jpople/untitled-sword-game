@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     AudioClip[] footsteps;
 
     Damageable lastFrameExecutionTarget;
+    Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0); 
 
     // Start is called before the first frame update
     void Start()
@@ -150,7 +151,7 @@ public class PlayerMovement : MonoBehaviour
     public void HandleAttack() {
         if (isGrounded && !isAttacking) {
             if (lastFrameExecutionTarget != null) {
-                Debug.Log("executing...");
+                HandleExecute();
             }
             else {
                 animator.SetTrigger("Attack");
@@ -158,6 +159,13 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(Attack());
             }
         }
+    }
+
+    public void HandleExecute() {
+        Debug.Log($"executing {lastFrameExecutionTarget.gameObject.name}...");
+        transform.position = lastFrameExecutionTarget.gameObject.transform.position - (EXECUTION_OFFSET * transform.localScale.x);
+        animator.CrossFade("Player_Execute", 0.0f);
+        lastFrameExecutionTarget = null;
     }
 
     public void HandleJump() {
@@ -199,6 +207,14 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayAttackSound() {
         attackSound.Play();
+    }
+
+    void PlayExecuteSound() {
+        attackSound.Play();
+    }
+
+    void ExecuteTarget() {
+        lastFrameExecutionTarget.GetExecuted();
     }
 
     void PlayFootstepSound() {

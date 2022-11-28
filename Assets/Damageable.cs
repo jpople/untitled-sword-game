@@ -28,6 +28,7 @@ public class Damageable : MonoBehaviour
     AudioSource source;
     [SerializeField] AudioClip hitSoundDefault;
     [SerializeField] AudioClip hitSoundBlocked;
+    [SerializeField] AudioClip postureBreakSound;
 
     [SerializeField] Animator anim;
 
@@ -104,10 +105,13 @@ public class Damageable : MonoBehaviour
     public void GetExecuted() {
         SetPosture(maxPosture);
         SetHP(maxHP);
+        source.PlayOneShot(hitSoundDefault);
+        UnbreakPosture();
     }
 
     public void BreakPosture() {
         if(behavior != State.BROKEN) {
+            source.PlayOneShot(postureBreakSound);
             behavior = State.BROKEN;
             timeLeftBroken = postureBreakDuration;
             executionMark.gameObject.SetActive(true);

@@ -1286,6 +1286,7 @@ MonoBehaviour:
   hpBar: {fileID: 228559967}
   hitSoundDefault: {fileID: 8300000, guid: e2c61b605ec2e0b4bb8a94a7ae8cf193, type: 3}
   hitSoundBlocked: {fileID: 8300000, guid: 4977ba997a9c5684492987214db0293b, type: 3}
+  postureBreakSound: {fileID: 8300000, guid: a9e3e58185ee11e4b9bad74b26795f97, type: 3}
   anim: {fileID: 1415584760}
   executionMark: {fileID: 1054166713}
   targetedForExecution: 0
