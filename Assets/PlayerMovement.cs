@@ -83,6 +83,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void GroundedCheck() {
+        bool startedGrounded = isGrounded;
+        List<Collider2D> results = new List<Collider2D>();
+        ContactFilter2D noFilter = new ContactFilter2D();
+        int hitGround = groundedBox.OverlapCollider(noFilter.NoFilter(), results);
+        isGrounded = hitGround > 1 && verticalVelocity <= 0;
+        if (!startedGrounded) {
+            PlayFootstepSound();
+        }
+    }
+
     #region ActionHandling
 
     public void HandleMove() {
@@ -105,6 +116,20 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void HandleAttack() {
+        // currently this one only handles one at a time
+        // there are other raycast functions, look into this
+        LayerMask mask = LayerMask.GetMask("Enemy");
+        RaycastHit2D h = Physics2D.Raycast(transform.position, new Vector2(transform.localScale.x, 0), 1f, mask);
+        if (h != null) {
+            Debug.Log(h.collider.gameObject.name);
+            Damageable enemy = h.collider.gameObject.GetComponent<Damageable>();
+            if(enemy != null) {
+                if (enemy.behavior == Damageable.State.BROKEN) {
+                    Debug.Log("executing...");
+                } 
+            }
+        }
+
         animator.SetTrigger("Attack");
         isAttacking = true;
         StartCoroutine(Attack());
@@ -122,7 +147,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnMoveInput(InputAction.CallbackContext c) {
         float movementX = c.ReadValue<Vector2>().x;
-        Debug.Log($"moving x = {movementX}");
         if (movementX > 0.1) {
             movementDirection = 1;
         }
@@ -154,16 +178,5 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayFootstepSound() {
         if (isGrounded) attackSound.PlayOneShot(footsteps[Random.Range(0, 3)]);
-    }
-
-    void GroundedCheck() {
-        bool startedGrounded = isGrounded;
-        List<Collider2D> results = new List<Collider2D>();
-        ContactFilter2D noFilter = new ContactFilter2D();
-        int hitGround = groundedBox.OverlapCollider(noFilter.NoFilter(), results);
-        isGrounded = hitGround > 1 && verticalVelocity <= 0;
-        if (!startedGrounded) {
-            PlayFootstepSound();
-        }
     }
 }

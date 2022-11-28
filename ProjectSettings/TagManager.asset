@@ -11,7 +11,7 @@ TagManager:
   - Terrain
   - Water
   - UI
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -46,4 +46,7 @@ TagManager:
     locked: 0
   - name: Particle
     uniqueID: 2561810949
+    locked: 0
+  - name: Overlay
+    uniqueID: 2281618305
     locked: 0
