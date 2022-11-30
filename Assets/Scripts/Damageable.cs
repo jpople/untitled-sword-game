@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using TMPro;
 
 public class Damageable : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class Damageable : MonoBehaviour
     float recoveryModifier = 1.0f; // recovery slows when HP is low
     bool recoveringPosture;
 
-    float postureBreakDuration = 3f;
+    float postureBreakDuration = 5f;
     float timeLeftBroken = 0f;
 
     float maxHP = 100;
@@ -35,6 +36,8 @@ public class Damageable : MonoBehaviour
     [SerializeField] ExecutionMark executionMark;
     public bool targetedForExecution;
 
+    PlayerMovement playerInLOS;
+
     // [SerializeField] TextMeshProUGUI debugText;
 
     public enum State {IDLE, BLOCKING, PARRYING, BROKEN}
@@ -48,10 +51,11 @@ public class Damageable : MonoBehaviour
     {
         SetHP(maxHP);
         SetPosture(maxPosture);
-        behavior = State.BLOCKING;
+        behavior = State.IDLE;
     }
 
     private void Update() {
+        CheckLOSForPlayer();
         if (recoveringPosture) {
             recoveryModifier = 1 - (currentHP / (maxHP * 2)); // reexamine this
             SetPosture(currentPosture += (basePostureRecovery * recoveryModifier));
@@ -76,21 +80,54 @@ public class Damageable : MonoBehaviour
         executionMark.targeted = targetedForExecution;
     }
 
+    void CheckLOSForPlayer() {
+        LayerMask mask = LayerMask.GetMask("Player");
+        RaycastHit2D h = Physics2D.Raycast(transform.position, new Vector2(-1, 0), 1f, mask);
+        if (h.collider == null) {
+            ForgetPlayer();
+        }
+        else {
+            FindPlayer(h.collider.gameObject.GetComponent<PlayerMovement>());
+        }
+    }
+
+    void FindPlayer(PlayerMovement player) {
+        if (playerInLOS == null) {
+            playerInLOS = player;
+            playerInLOS.AttackWindup.AddListener(ReactToAttack);
+        }
+    }
+
+    void ForgetPlayer() {
+        if (playerInLOS != null) {
+            playerInLOS.AttackWindup.RemoveListener(ReactToAttack);
+            playerInLOS = null;
+        }
+    }
+
+    void ReactToAttack() {
+        StartCoroutine(reactiveBlock());
+    }
+
+    IEnumerator reactiveBlock() {
+        yield return new WaitForSeconds(0.35f);
+        anim.CrossFade("Dummy_Block", 0f);
+    }
+
+    void ShieldUp() {
+        behavior = State.BLOCKING;
+    }
+
+    void ShieldDown() {
+        behavior = State.IDLE;
+    }
+
     public void GetHit() {
         if(currentHP <= 0) {
             BreakPosture();
         }
         recoveringPosture = false;
         timeSinceEngagement = 0f;
-        if(behavior != State.BROKEN) {
-            int flip = Random.Range(0, 2);
-            if(flip == 1) {
-                behavior = State.IDLE;
-            }
-            else {
-                behavior = State.BLOCKING;
-            }
-        }
         switch(behavior) {
             case State.IDLE:
                 source.PlayOneShot(hitSoundDefault);
@@ -101,7 +138,6 @@ public class Damageable : MonoBehaviour
             case State.BLOCKING:
                 source.PlayOneShot(hitSoundBlocked);
                 SetPosture(currentPosture - 20);
-                anim.CrossFade("Dummy_Block", 0.0f);
                 break;
             default:
                 break;
@@ -118,6 +154,7 @@ public class Damageable : MonoBehaviour
         anim.CrossFade("Dummy_Death", 0.0f);
         postureBar.gameObject.SetActive(false);
         hpBar.gameObject.SetActive(false);
+        GetComponent<BoxCollider2D>().enabled = false;
         UnbreakPosture();
     }
 

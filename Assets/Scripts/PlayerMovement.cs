@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -32,11 +33,16 @@ public class PlayerMovement : MonoBehaviour
     AudioClip[] footsteps;
 
     Damageable lastFrameExecutionTarget;
-    Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0); 
+    Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0);
+
+    public UnityEvent AttackWindup; 
 
     // Start is called before the first frame update
     void Start()
     {
+        if (AttackWindup == null) {
+            AttackWindup = new UnityEvent();
+        }
         animator.ResetTrigger("Attack");
     }
 
@@ -130,6 +136,7 @@ public class PlayerMovement : MonoBehaviour
     #region ActionHandling
 
     public void HandleMove() {
+        // surely this can be made nicer somehow
         if (movementDirection == 1 && !isAttacking) {
             horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
             transform.localScale = new Vector3(1, 1, 1);
@@ -156,6 +163,7 @@ public class PlayerMovement : MonoBehaviour
             else {
                 animator.SetTrigger("Attack");
                 isAttacking = true;
+                AttackWindup.Invoke();
                 StartCoroutine(Attack());
             }
         }
@@ -164,7 +172,6 @@ public class PlayerMovement : MonoBehaviour
     public void HandleExecute() {
         transform.position = lastFrameExecutionTarget.gameObject.transform.position - (EXECUTION_OFFSET * transform.localScale.x);
         animator.CrossFade("Player_Execute", 0.0f);
-        lastFrameExecutionTarget = null;
     }
 
     public void HandleJump() {
@@ -214,6 +221,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ExecuteTarget() {
         lastFrameExecutionTarget.GetExecuted();
+        lastFrameExecutionTarget = null;
     }
 
     void PlayFootstepSound() {
