@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     AudioClip[] footsteps;
 
-    Damageable lastFrameExecutionTarget;
+    Damageable executionTarget;
     Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0);
 
     public UnityEvent AttackWindup; 
@@ -112,21 +112,21 @@ public class PlayerMovement : MonoBehaviour
         if (h.collider != null) {
             Damageable frontEnemy = h.collider.gameObject.GetComponent<Damageable>();
             if (frontEnemy.behavior == Damageable.State.BROKEN) {
-                if (lastFrameExecutionTarget == null) {
-                    lastFrameExecutionTarget = frontEnemy;
+                if (executionTarget == null) {
+                    executionTarget = frontEnemy;
                     frontEnemy.targetedForExecution = true;
                 }
-                else if (lastFrameExecutionTarget != frontEnemy) {
-                    lastFrameExecutionTarget.targetedForExecution = false;
+                else if (executionTarget != frontEnemy) {
+                    executionTarget.targetedForExecution = false;
                     frontEnemy.targetedForExecution = true;
-                    lastFrameExecutionTarget = frontEnemy;
+                    executionTarget = frontEnemy;
                 }
             }
         }
         else {
-            if (lastFrameExecutionTarget != null) {
-                lastFrameExecutionTarget.targetedForExecution = false;
-                lastFrameExecutionTarget = null;
+            if (executionTarget != null) {
+                executionTarget.targetedForExecution = false;
+                executionTarget = null;
             }
         }
     }
@@ -157,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void HandleAttack() {
         if (isGrounded && !isAttacking) {
-            if (lastFrameExecutionTarget != null) {
+            if (executionTarget != null) {
                 HandleExecute();
             }
             else {
@@ -170,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void HandleExecute() {
-        transform.position = lastFrameExecutionTarget.gameObject.transform.position - (EXECUTION_OFFSET * transform.localScale.x);
+        transform.position = executionTarget.gameObject.transform.position - (EXECUTION_OFFSET * transform.localScale.x);
         animator.CrossFade("Player_Execute", 0.0f);
     }
 
@@ -220,8 +220,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void ExecuteTarget() {
-        lastFrameExecutionTarget.GetExecuted();
-        lastFrameExecutionTarget = null;
+        executionTarget.GetExecuted();
+        executionTarget = null;
     }
 
     void PlayFootstepSound() {

@@ -19,7 +19,7 @@ public class Damageable : MonoBehaviour
     float recoveryModifier = 1.0f; // recovery slows when HP is low
     bool recoveringPosture;
 
-    float postureBreakDuration = 5f;
+    float postureBreakDuration = 4f;
     float timeLeftBroken = 0f;
 
     float maxHP = 100;
@@ -106,7 +106,9 @@ public class Damageable : MonoBehaviour
     }
 
     void ReactToAttack() {
-        StartCoroutine(reactiveBlock());
+        if (behavior == State.IDLE) {
+            StartCoroutine(reactiveBlock());
+        }
     }
 
     IEnumerator reactiveBlock() {
@@ -164,6 +166,7 @@ public class Damageable : MonoBehaviour
             behavior = State.BROKEN;
             timeLeftBroken = postureBreakDuration;
             executionMark.gameObject.SetActive(true);
+            anim.CrossFade("Dummy_Idle", 0f);
         }
     }
 
