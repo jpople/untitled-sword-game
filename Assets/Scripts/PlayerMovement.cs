@@ -49,22 +49,17 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        HandleMove();
+        // HandleAcceleration();
         ExecutionTargetCheck();
-
-        animator.SetFloat("Speed", Mathf.Abs(horizontalVelocity));
-        animator.SetFloat("VertSpeed", verticalVelocity);
     }
 
     void FixedUpdate() {
         GroundedCheck();
-        if (!isGrounded) {
-            verticalVelocity -= gravity;
-        }
-        else {
-            verticalVelocity = 0;
-        }
+        HandleAcceleration();
         transform.position += new Vector3(horizontalVelocity, verticalVelocity, 0);
+        
+        animator.SetFloat("Speed", Mathf.Abs(horizontalVelocity));
+        animator.SetFloat("VertSpeed", verticalVelocity);
     }
 
     private IEnumerator Attack() {
@@ -73,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Bump() {
-        horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x * 2;
+        horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x * 0.5f;
     }
 
     #region GameLogic
@@ -135,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region ActionHandling
 
-    public void HandleMove() {
+    public void HandleAcceleration() {
         // surely this can be made nicer somehow
         if (movementDirection == 1 && !isAttacking) {
             horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
@@ -152,6 +147,13 @@ public class PlayerMovement : MonoBehaviour
             else if (horizontalVelocity > 0) {
                 horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
             }
+        }
+
+        if (!isGrounded) {
+            verticalVelocity -= gravity;
+        }
+        else {
+            verticalVelocity = 0;
         }
     }
 
