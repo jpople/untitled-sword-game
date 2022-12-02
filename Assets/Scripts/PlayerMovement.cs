@@ -6,15 +6,15 @@ using UnityEngine.Events;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Animator animator;
+    [SerializeField] Animator animator;
 
-    public float horizontalVelocity = 0f;
-    public float horizAcceleration;
+    float horizontalVelocity = 0f;
+    float horizAcceleration = 0.01f;
     int movementDirection;
 
-    public float verticalVelocity = 0f;
-    public float jumpForce;
-    public float gravity;
+    float verticalVelocity = 0f;
+    float jumpForce = 0.15f;
+    float gravity = 0.01f;
 
     const float MAX_HORIZONTAL_SPEED = 0.08f;
 
@@ -23,14 +23,10 @@ public class PlayerMovement : MonoBehaviour
 
     bool isGrounded = false;
     
-    [SerializeField] 
-    PolygonCollider2D attackHitbox;
-    [SerializeField]
-    BoxCollider2D groundedBox;
-    [SerializeField]
-    AudioSource attackSound;
-    [SerializeField]
-    AudioClip[] footsteps;
+    [SerializeField] PolygonCollider2D attackHitbox;
+    [SerializeField] BoxCollider2D groundedBox;
+    [SerializeField] AudioSource attackSound;
+    [SerializeField] AudioClip[] footsteps;
 
     Damageable executionTarget;
     Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0);
@@ -49,7 +45,6 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        // HandleAcceleration();
         ExecutionTargetCheck();
     }
 
