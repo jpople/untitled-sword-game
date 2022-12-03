@@ -29,6 +29,7 @@ public class Damageable : MonoBehaviour
     AudioSource source;
     [SerializeField] AudioClip hitSoundDefault;
     [SerializeField] AudioClip hitSoundBlocked;
+    [SerializeField] AudioClip hitSoundParried;
     [SerializeField] AudioClip postureBreakSound;
 
     [SerializeField] Animator anim;
@@ -43,6 +44,8 @@ public class Damageable : MonoBehaviour
     public enum State {IDLE, BLOCKING, PARRYING, BROKEN}
     public State behavior;
 
+    public UnityEvent parryAttack;
+
     private void Awake() {
         source = GetComponent<AudioSource>();
     }
@@ -52,6 +55,9 @@ public class Damageable : MonoBehaviour
         SetHP(maxHP);
         SetPosture(maxPosture);
         behavior = State.IDLE;
+        if (parryAttack == null) {
+            parryAttack = new UnityEvent();
+        }
     }
 
     private void Update() {
@@ -117,7 +123,7 @@ public class Damageable : MonoBehaviour
     }
 
     void ShieldUp() {
-        behavior = State.BLOCKING;
+        behavior = State.PARRYING;
     }
 
     void ShieldDown() {
@@ -141,7 +147,10 @@ public class Damageable : MonoBehaviour
                 source.PlayOneShot(hitSoundBlocked);
                 SetPosture(currentPosture - 20);
                 break;
-            default:
+            case State.PARRYING:
+                source.PlayOneShot(hitSoundParried);
+                parryAttack.Invoke();
+                Mathf.Clamp(currentPosture, 1, currentPosture - 10);
                 break;
         }
         if(currentPosture < 1) {

@@ -159,11 +159,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 84032739}
-  horizontalVelocity: 0
-  horizAcceleration: 0.01
-  verticalVelocity: 0
-  jumpForce: 0.15
-  gravity: 0.01
   attackHitbox: {fileID: 1721768941}
   groundedBox: {fileID: 965710614}
   attackSound: {fileID: 84032740}
@@ -1053,7 +1048,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 4
-      m_TileSpriteIndex: 4
+      m_TileSpriteIndex: 7
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1063,7 +1058,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 3
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1073,7 +1068,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 2
-      m_TileSpriteIndex: 2
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1133,7 +1128,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileSpriteIndex: 4
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1143,7 +1138,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileSpriteIndex: 3
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1204,6 +1199,12 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 976c04659d35cfa48800051f4fca56c4, type: 2}
   m_TileSpriteArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -773930624, guid: 0de063702cf08904aa2e61bfdb96d44c, type: 3}
   - m_RefCount: 1
@@ -1214,12 +1215,6 @@ Tilemap:
     m_Data: {fileID: -97562755, guid: 0de063702cf08904aa2e61bfdb96d44c, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 739450135, guid: 0de063702cf08904aa2e61bfdb96d44c, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 2
     m_Data: {fileID: 541400512, guid: 0de063702cf08904aa2e61bfdb96d44c, type: 3}
   - m_RefCount: 1
@@ -2877,11 +2872,15 @@ MonoBehaviour:
   hpBar: {fileID: 228559967}
   hitSoundDefault: {fileID: 8300000, guid: e2c61b605ec2e0b4bb8a94a7ae8cf193, type: 3}
   hitSoundBlocked: {fileID: 8300000, guid: 4977ba997a9c5684492987214db0293b, type: 3}
+  hitSoundParried: {fileID: 8300000, guid: bd110d403f47ad4408523c0cf4c15943, type: 3}
   postureBreakSound: {fileID: 8300000, guid: a9e3e58185ee11e4b9bad74b26795f97, type: 3}
   anim: {fileID: 1415584760}
   executionMark: {fileID: 1054166713}
   targetedForExecution: 0
   behavior: 0
+  parryAttack:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!82 &1415584759
 AudioSource:
   m_ObjectHideFlags: 0

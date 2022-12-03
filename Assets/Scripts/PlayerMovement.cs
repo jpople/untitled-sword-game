@@ -39,7 +39,6 @@ public class PlayerMovement : MonoBehaviour
         if (AttackWindup == null) {
             AttackWindup = new UnityEvent();
         }
-        animator.ResetTrigger("Attack");
     }
 
     // Update is called once per frame
@@ -77,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
                 if (c.gameObject.name != "Player")
                 {
                     Damageable enemy = c.gameObject.GetComponent<Damageable>();
+                    enemy.parryAttack.AddListener(HandleGetParried); // am I allowed to do this?
                     if (enemy != null) {
                         enemy.GetHit();
                     }
@@ -158,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
                 HandleExecute();
             }
             else {
-                animator.SetTrigger("Attack");
+                animator.CrossFade("Player_Attack", 0f);
                 isAttacking = true;
                 AttackWindup.Invoke();
                 StartCoroutine(Attack());
@@ -175,6 +175,11 @@ public class PlayerMovement : MonoBehaviour
         if(isGrounded) {
             verticalVelocity = jumpForce;
         }
+    }
+
+    public void HandleGetParried() {
+        Debug.Log("attack was parried!");
+        animator.CrossFade("Player_Get_Parried", 0.0f);
     }
     
     #endregion
