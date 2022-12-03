@@ -21,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     const float ATTACK_ANIM_DURATION = 0.8f;
     bool isAttacking;
 
+    [SerializeField] AttackData firstAttack;
+
     bool isGrounded = false;
     
     [SerializeField] PolygonCollider2D attackHitbox;
@@ -28,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] AudioSource attackSound;
     [SerializeField] AudioClip[] footsteps;
 
-    Damageable executionTarget;
+    Combatant executionTarget;
     Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0);
 
     public UnityEvent AttackWindup; 
@@ -75,10 +77,9 @@ public class PlayerMovement : MonoBehaviour
             foreach (Collider2D c in results) {
                 if (c.gameObject.name != "Player")
                 {
-                    Damageable enemy = c.gameObject.GetComponent<Damageable>();
-                    enemy.parryAttack.AddListener(HandleGetParried); // am I allowed to do this?
+                    Combatant enemy = c.gameObject.GetComponent<Combatant>();
                     if (enemy != null) {
-                        enemy.GetHit();
+                        enemy.HandleReceiveAttack(firstAttack);
                     }
                 }
             }
@@ -100,8 +101,8 @@ public class PlayerMovement : MonoBehaviour
         LayerMask mask = LayerMask.GetMask("Enemy");
         RaycastHit2D h = Physics2D.Raycast(transform.position, new Vector2(transform.localScale.x, 0), 1f, mask);
         if (h.collider != null) {
-            Damageable frontEnemy = h.collider.gameObject.GetComponent<Damageable>();
-            if (frontEnemy.behavior == Damageable.State.BROKEN) {
+            Combatant frontEnemy = h.collider.gameObject.GetComponent<Combatant>();
+            if (frontEnemy.currentStatus == Combatant.Status.BROKEN) {
                 if (executionTarget == null) {
                     executionTarget = frontEnemy;
                     frontEnemy.targetedForExecution = true;
@@ -222,7 +223,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void ExecuteTarget() {
-        executionTarget.GetExecuted();
+        executionTarget.HandleReceiveExecution();
         executionTarget = null;
     }
 
