@@ -133,6 +133,7 @@ public class Combatant : MonoBehaviour {
     }
 
     public void HandleReceiveExecution() {
+        Die();
         Debug.Log("executed!");
     }
 
@@ -175,6 +176,7 @@ public class Combatant : MonoBehaviour {
     void Die() {
         hpBar.gameObject.SetActive(false);
         postureBar.gameObject.SetActive(false);
+        executionMark.gameObject.SetActive(false);
         GetComponent<BoxCollider2D>().enabled = false;
     }
 
