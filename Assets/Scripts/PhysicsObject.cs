@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PhysicsObject : MonoBehaviour
 {
@@ -19,10 +20,8 @@ public class PhysicsObject : MonoBehaviour
     const float MAX_HORIZONTAL_SPEED = 0.08f;
     const float MAX_VERTICAL_SPEED = 0.2f;
 
-    void Update() {
-        if (Input.GetKeyDown("q")) {
-            ApplyForce(new Vector3 (0.05f, 0.15f, 0));
-        }
+    void Start() {
+        GetComponent<Combatant>().onGetHit.AddListener(HandleGetHit);
     }
 
     void FixedUpdate() {
@@ -71,6 +70,10 @@ public class PhysicsObject : MonoBehaviour
         else {
             verticalVelocity = 0;
         }
+    }
+
+    public void HandleGetHit(AttackData attack) {
+        ApplyForce(attack.force);
     }
 
     void ApplyForce(Vector3 value) {

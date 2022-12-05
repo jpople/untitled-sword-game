@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 public class Combatant : MonoBehaviour {
     // HP damage handling
@@ -16,11 +17,11 @@ public class Combatant : MonoBehaviour {
     float postureBreakDuration = 4f;
     float timeLeftBroken = 0f; // this and "timeSinceEngagement" are weirdly asymmetrical
     // posture recovery handling
-    float basePostureRecovery = 1f;
+    float basePostureRecovery = 20f;
     float postureRecoveryModifier = 1f; // this value slows down recovery as HP decreases
     bool isRecoveringPosture;
     float postureRecoveryDelay = 1f;
-    float timeSinceEngagement;
+    float timeSinceEngagement = 0f;
     // execution marker
     [SerializeField] ExecutionMark executionMark;
     public bool targetedForExecution;
@@ -36,6 +37,8 @@ public class Combatant : MonoBehaviour {
     // status
     public enum Status { NONE, BLOCKING, PARRYING, BROKEN }
     public Status currentStatus = Status.NONE;
+
+    public TextMeshProUGUI debugText;
 
     public void ChangeStatus(Status newStatus) {
         currentStatus = newStatus;
@@ -112,6 +115,8 @@ public class Combatant : MonoBehaviour {
 
         // toggle execution mark
         executionMark.targeted = targetedForExecution;
+
+        // debugText.text = $"{timeSinceEngagement}";
     }
 
     #endregion
@@ -119,6 +124,8 @@ public class Combatant : MonoBehaviour {
     #region GettingHit
 
     public void HandleReceiveAttack(AttackData attack) {
+        isRecoveringPosture = false;
+        timeSinceEngagement = 0f;
         switch(currentStatus) {
             case Status.NONE:
                 onGetHit.Invoke(attack);
@@ -134,7 +141,6 @@ public class Combatant : MonoBehaviour {
 
     public void HandleReceiveExecution() {
         Die();
-        Debug.Log("executed!");
     }
 
     void HandleGetHit(AttackData attack) {
@@ -174,6 +180,9 @@ public class Combatant : MonoBehaviour {
     }
 
     void Die() {
+        onDie.Invoke();
+        SetHP(maxHP);
+        SetPosture(maxPosture);
         hpBar.gameObject.SetActive(false);
         postureBar.gameObject.SetActive(false);
         executionMark.gameObject.SetActive(false);

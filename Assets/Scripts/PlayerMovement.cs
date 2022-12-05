@@ -70,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
     #region GameLogic
 
     void CheckHitbox() {
+        // handling for AttackData.force goes here maybe?
         List<Collider2D> results = new List<Collider2D>();
         ContactFilter2D noFilter = new ContactFilter2D();
         int allHitEntities = attackHitbox.OverlapCollider(noFilter.NoFilter(), results);
@@ -179,7 +180,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void HandleGetParried() {
-        Debug.Log("attack was parried!");
         animator.CrossFade("Player_Get_Parried", 0.0f);
     }
     
