@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class TargetDummyFX : MonoBehaviour
+public class CombatantFX : MonoBehaviour
 {
     [SerializeField] AudioClip hitSoundDefault;
+    [SerializeField] string hitAnimation;
     [SerializeField] AudioClip hitSoundBlocked;
     [SerializeField] AudioClip hitSoundParried;
+    [SerializeField] string deathAnimation;
 
     AudioSource source;
     Animator anim;
@@ -28,7 +30,7 @@ public class TargetDummyFX : MonoBehaviour
 
     void HandleGetHit(AttackData a) {
         source.PlayOneShot(hitSoundDefault);
-        anim.CrossFade("Dummy_Hit", 0);
+        anim.CrossFade("Get_Hit", 0);
     }
 
     void HandleBlock(AttackData a) {
@@ -41,6 +43,6 @@ public class TargetDummyFX : MonoBehaviour
 
     void HandleDie() {
         source.PlayOneShot(hitSoundDefault);
-        anim.CrossFade("Dummy_Death", 0);
+        anim.CrossFade("Death", 0);
     }
 }
