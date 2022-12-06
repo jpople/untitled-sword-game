@@ -18,7 +18,7 @@ public struct AttackData {
     public float postureDamageToAttacker; // when attack is parried
 
     public Vector3 force; // assuming the attacker is facing right (towards positive x)
-    // also the value force represents is technically momentum, don't @ me
+    // also the value this represents is technically momentum, don't @ me
 }
 [System.Serializable]
 public class AttackImpactEvent : UnityEvent<AttackData> {

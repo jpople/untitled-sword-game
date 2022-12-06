@@ -6,10 +6,14 @@ using UnityEngine.Events;
 public class CombatantFX : MonoBehaviour
 {
     [SerializeField] AudioClip hitSoundDefault;
-    [SerializeField] string hitAnimation;
     [SerializeField] AudioClip hitSoundBlocked;
     [SerializeField] AudioClip hitSoundParried;
-    [SerializeField] string deathAnimation;
+
+    [SerializeField] AudioClip footstepSound;
+
+    [SerializeField] AnimationClip hitAnimation;
+    [SerializeField] AnimationClip blockAnimation;
+    [SerializeField] AnimationClip deathAnimation;
 
     AudioSource source;
     Animator anim;
@@ -26,11 +30,12 @@ public class CombatantFX : MonoBehaviour
         character.onBlock.AddListener(HandleBlock);
         character.onParry.AddListener(HandleParry);
         character.onDie.AddListener(HandleDie);
+        GetComponent<PhysicsObject>().onLand.AddListener(PlayFootstepSound);
     }
 
     void HandleGetHit(AttackData a) {
         source.PlayOneShot(hitSoundDefault);
-        anim.CrossFade("Get_Hit", 0);
+        anim.CrossFade(hitAnimation.name, 0);
     }
 
     void HandleBlock(AttackData a) {
@@ -38,11 +43,17 @@ public class CombatantFX : MonoBehaviour
     }
     
     void HandleParry(AttackData a) {
-        source.PlayOneShot(hitSoundBlocked);
+        source.PlayOneShot(hitSoundParried);
     }
 
     void HandleDie() {
         source.PlayOneShot(hitSoundDefault);
-        anim.CrossFade("Death", 0);
+        anim.CrossFade(deathAnimation.name, 0);
+    }
+
+    void PlayFootstepSound() {
+        if (footstepSound != null) {
+            source.PlayOneShot(footstepSound);
+        }
     }
 }

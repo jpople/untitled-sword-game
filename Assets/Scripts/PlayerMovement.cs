@@ -3,37 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using TMPro;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : PhysicsObject
 {
-    [SerializeField] Animator animator;
-
-    float horizontalVelocity = 0f;
-    float horizAcceleration = 0.01f;
-    int movementDirection;
-
-    float verticalVelocity = 0f;
-    float jumpForce = 0.15f;
-    float gravity = 0.01f;
-
-    const float MAX_HORIZONTAL_SPEED = 0.08f;
-
+    const float JUMP_FORCE = 0.15f;
     const float ATTACK_ANIM_DURATION = 0.8f;
+
     bool isAttacking;
+    Vector2 lastMovementInput;
 
     [SerializeField] AttackData firstAttack;
-
-    bool isGrounded = false;
-    
     [SerializeField] PolygonCollider2D attackHitbox;
-    [SerializeField] BoxCollider2D groundedBox;
     [SerializeField] AudioSource attackSound;
-    [SerializeField] AudioClip[] footsteps;
+    [SerializeField] Animator animator;
 
     Combatant executionTarget;
     Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0);
 
-    public UnityEvent AttackWindup; 
+    public UnityEvent AttackWindup;
+    public TextMeshProUGUI debugText;
 
     // Start is called before the first frame update
     void Start()
@@ -46,31 +35,27 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
+        HandleMove();
         ExecutionTargetCheck();
-    }
-
-    void FixedUpdate() {
-        GroundedCheck();
-        HandleAcceleration();
-        transform.position += new Vector3(horizontalVelocity, verticalVelocity, 0);
-        
         animator.SetFloat("Speed", Mathf.Abs(horizontalVelocity));
         animator.SetFloat("VertSpeed", verticalVelocity);
+
+        debugText.text = $"isAttacking: {isAttacking}\nmovementDirection: {movementDirection}";
     }
 
     private IEnumerator Attack() {
         yield return new WaitForSeconds(0.8f);
         isAttacking = false;
+        
     }
 
     void Bump() {
-        horizontalVelocity = MAX_HORIZONTAL_SPEED * transform.localScale.x * 0.5f;
+        ApplyForce(new Vector3(MAX_HORIZONTAL_SPEED * transform.localScale.x, 0, 0));
     }
 
     #region GameLogic
 
     void CheckHitbox() {
-        // handling for AttackData.force goes here maybe?
         List<Collider2D> results = new List<Collider2D>();
         ContactFilter2D noFilter = new ContactFilter2D();
         int allHitEntities = attackHitbox.OverlapCollider(noFilter.NoFilter(), results);
@@ -80,21 +65,20 @@ public class PlayerMovement : MonoBehaviour
                 {
                     Combatant enemy = c.gameObject.GetComponent<Combatant>();
                     if (enemy != null) {
-                        enemy.HandleReceiveAttack(firstAttack);
+                        if (enemy.currentStatus == Combatant.Status.PARRYING) {
+                            HandleGetParried(firstAttack);
+                        }
+                        if (transform.localScale.x == -1) {
+                            firstAttack.force.x = -firstAttack.force.x;
+                            enemy.HandleReceiveAttack(firstAttack);
+                            firstAttack.force.x = -firstAttack.force.x;
+                        }
+                        else {
+                            enemy.HandleReceiveAttack(firstAttack);
+                        }
                     }
                 }
             }
-        }
-    }
-
-    void GroundedCheck() {
-        bool startedGrounded = isGrounded;
-        List<Collider2D> results = new List<Collider2D>();
-        ContactFilter2D noFilter = new ContactFilter2D();
-        int hitGround = groundedBox.OverlapCollider(noFilter.NoFilter(), results);
-        isGrounded = hitGround > 1 && verticalVelocity <= 0;
-        if (!startedGrounded) {
-            PlayFootstepSound();
         }
     }
 
@@ -127,34 +111,8 @@ public class PlayerMovement : MonoBehaviour
 
     #region ActionHandling
 
-    public void HandleAcceleration() {
-        // surely this can be made nicer somehow
-        if (movementDirection == 1 && !isAttacking) {
-            horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (movementDirection == -1 && !isAttacking) {
-            horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, -MAX_HORIZONTAL_SPEED, 0);
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else {
-            if (horizontalVelocity < 0) {
-                horizontalVelocity = Mathf.Clamp(horizontalVelocity + horizAcceleration, -MAX_HORIZONTAL_SPEED, 0);
-            }
-            else if (horizontalVelocity > 0) {
-                horizontalVelocity = Mathf.Clamp(horizontalVelocity - horizAcceleration, 0, MAX_HORIZONTAL_SPEED);
-            }
-        }
-
-        if (!isGrounded) {
-            verticalVelocity -= gravity;
-        }
-        else {
-            verticalVelocity = 0;
-        }
-    }
-
     public void HandleAttack() {
+        movementDirection = 0;
         if (isGrounded && !isAttacking) {
             if (executionTarget != null) {
                 HandleExecute();
@@ -175,12 +133,29 @@ public class PlayerMovement : MonoBehaviour
 
     public void HandleJump() {
         if(isGrounded) {
-            verticalVelocity = jumpForce;
+            ApplyForce(new Vector3(0, 0.15f, 0));
         }
     }
 
-    public void HandleGetParried() {
+    public void HandleGetParried(AttackData attack) {
+        // at some point, add this this so player is forced to remain in isAttacking state
+        // StopCoroutine(Attack());
         animator.CrossFade("Player_Get_Parried", 0.0f);
+        GetComponent<Combatant>().onGetParried.Invoke(attack);
+    }
+
+    public void HandleMove() {
+        if(!isAttacking) {
+            if (lastMovementInput.x > 0.1) {
+                movementDirection = 1;
+            }
+            else if (lastMovementInput.x < -0.1) {
+                movementDirection = -1;
+            }
+            else {
+                movementDirection = 0;
+            }
+        }
     }
     
     #endregion
@@ -188,16 +163,9 @@ public class PlayerMovement : MonoBehaviour
     #region InputHandling
 
     public void OnMoveInput(InputAction.CallbackContext c) {
-        float movementX = c.ReadValue<Vector2>().x;
-        if (movementX > 0.1) {
-            movementDirection = 1;
-        }
-        else if (movementX < -0.1) {
-            movementDirection = -1;
-        }
-        else {
-            movementDirection = 0;
-        }
+        // does this function only get called when the input *changes* or what?
+
+        lastMovementInput = c.ReadValue<Vector2>();
     }
 
     public void OnJumpInput(InputAction.CallbackContext c) {
@@ -225,9 +193,5 @@ public class PlayerMovement : MonoBehaviour
     void ExecuteTarget() {
         executionTarget.HandleReceiveExecution();
         executionTarget = null;
-    }
-
-    void PlayFootstepSound() {
-        if (isGrounded) attackSound.PlayOneShot(footsteps[Random.Range(0, 3)]);
     }
 }
