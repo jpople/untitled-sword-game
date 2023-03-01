@@ -43,7 +43,7 @@ Transform:
   - {fileID: 5715720808017387050}
   - {fileID: 5715720808813939784}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5715720807615085704
 SpriteRenderer:
@@ -189,12 +189,12 @@ MonoBehaviour:
   hitSoundBlocked: {fileID: 8300000, guid: 4977ba997a9c5684492987214db0293b, type: 3}
   hitSoundParried: {fileID: 8300000, guid: a4e77d7f3196e114492d6ff5af300613, type: 3}
   postureBreakSound: {fileID: 8300000, guid: e840ab5eb75f8a44b9ce0db1af8946cd, type: 3}
-  getExecutedSound: {fileID: 0}
+  getExecutedSound: {fileID: 8300000, guid: ed70e320cfa734c4b8e035d80e192b9b, type: 3}
   footstepSound: {fileID: 8300000, guid: 91f17b92281e47342bb773e7ab132a0e, type: 3}
   idleAnimation: {fileID: 0}
   hitAnimation: {fileID: 7400000, guid: f6d83d6ea6eab844e90bf164f6762c9e, type: 2}
   blockAnimation: {fileID: 0}
-  deathAnimation: {fileID: 0}
+  deathAnimation: {fileID: 7400000, guid: df054891b70c2894e8319e8262f9d846, type: 2}
   postureBreakAnimation: {fileID: 0}
   ps: {fileID: 0}
   burst: {fileID: 0}

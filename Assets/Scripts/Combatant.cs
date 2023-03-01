@@ -5,6 +5,8 @@ using UnityEngine.Events;
 using TMPro;
 
 public class Combatant : MonoBehaviour {
+    // are we a player or NPC?  I don't want to talk about this
+    bool isPlayer = false;
     // HP damage handling
     bool isInvulnerable;
     [SerializeField] StatusBar hpBar;
@@ -74,6 +76,9 @@ public class Combatant : MonoBehaviour {
     }
 
     void Start() {
+        if (GetComponent<PlayerMovement>() != null) {
+            isPlayer = true;
+        }
         SetHP(maxHP);
         SetPosture(maxPosture);
 
@@ -167,11 +172,16 @@ public class Combatant : MonoBehaviour {
     #region PostureBreaking
 
     void HandleBreakPosture() {
-        if (currentStatus != Status.BROKEN) {
-            currentStatus = Status.BROKEN;
-            timeLeftBroken = postureBreakDuration;
-            onPostureBroken.Invoke();
-            executionMark.gameObject.SetActive(true);
+        if (isPlayer) {
+            Die();
+        }
+        else {
+            if (currentStatus != Status.BROKEN) {
+                currentStatus = Status.BROKEN;
+                timeLeftBroken = postureBreakDuration;
+                onPostureBroken.Invoke();
+                executionMark.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -190,6 +200,9 @@ public class Combatant : MonoBehaviour {
         postureBar.gameObject.SetActive(false);
         executionMark.gameObject.SetActive(false);
         GetComponent<BoxCollider2D>().enabled = false;
+        if (isPlayer) {
+            GetComponent<PlayerMovement>().enabled = false;
+        }
     }
 
     #endregion

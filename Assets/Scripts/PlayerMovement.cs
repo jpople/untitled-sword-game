@@ -168,8 +168,10 @@ public class PlayerMovement : PhysicsObject
     }
 
     public void HandleLeaveBlock() {
-        animator.CrossFade("Player_Idle", 0f);
-        isBlocking = false;
+        if (enabled) {
+            animator.CrossFade("Player_Idle", 0f);
+            isBlocking = false;
+        }
     }
     
     #endregion
