@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class PlayerMovement : PhysicsObject
@@ -173,6 +174,10 @@ public class PlayerMovement : PhysicsObject
             isBlocking = false;
         }
     }
+
+    public void ResetLevel() {
+        SceneManager.LoadScene(0);
+    }
     
     #endregion
 
@@ -202,6 +207,12 @@ public class PlayerMovement : PhysicsObject
         }
         if (c.canceled) {
             HandleLeaveBlock();
+        }
+    }
+
+    public void OnResetInput(InputAction.CallbackContext c) {
+        if (c.started) {
+            ResetLevel();
         }
     }
 

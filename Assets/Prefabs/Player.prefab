@@ -43,7 +43,7 @@ Transform:
   - {fileID: 5715720808017387050}
   - {fileID: 5715720808813939784}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5715720807615085704
 SpriteRenderer:
@@ -450,6 +450,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 8110c8ad-0678-4479-a3c5-b23263171b37
     m_ActionName: Gameplay/Block[/Keyboard/q,/XInputControllerWindows/buttonNorth]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5715720807615085705}
+        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
+        m_MethodName: OnResetInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 45022ffe-f480-4da8-b60e-d6814b6a2014
+    m_ActionName: Gameplay/Reset Level[/Keyboard/r,/XInputControllerWindows/start]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Controller
   m_DefaultActionMap: Gameplay
