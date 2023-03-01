@@ -17,7 +17,7 @@ public class Combatant : MonoBehaviour {
     float postureBreakDuration = 4f;
     float timeLeftBroken = 0f; // this and "timeSinceEngagement" are weirdly asymmetrical
     // posture recovery handling
-    float basePostureRecovery = 20f;
+    float basePostureRecovery = 10f;
     float postureRecoveryModifier = 1f; // this value slows down recovery as HP decreases
     bool isRecoveringPosture;
     float postureRecoveryDelay = 1f;
@@ -35,7 +35,7 @@ public class Combatant : MonoBehaviour {
     public UnityEvent onGetExecuted;
     public UnityEvent onDie;
     // status
-    public enum Status { NONE, BLOCKING, PARRYING, BROKEN }
+    public enum Status { NONE, BLOCKING, PARRYING, BROKEN, DEAD }
     public Status currentStatus = Status.NONE;
 
     public TextMeshProUGUI debugText;
@@ -85,7 +85,7 @@ public class Combatant : MonoBehaviour {
 
     void Update() {
         // handle posture recovery
-        if (isRecoveringPosture) {
+        if (isRecoveringPosture && currentStatus != Status.BROKEN) {
             postureRecoveryModifier = 1 - (currentHP / (maxHP * 2));
             SetPosture(currentPosture += (basePostureRecovery * postureRecoveryModifier * Time.deltaTime));
             if (currentPosture >= maxPosture) {
@@ -115,8 +115,6 @@ public class Combatant : MonoBehaviour {
 
         // toggle execution mark
         executionMark.targeted = targetedForExecution;
-
-        // debugText.text = $"{timeSinceEngagement}";
     }
 
     #endregion
@@ -149,6 +147,8 @@ public class Combatant : MonoBehaviour {
     }
 
     void HandleGetParried(AttackData attack) {
+        isRecoveringPosture = false;
+        timeSinceEngagement = 0f;
         SetPosture(currentPosture - attack.postureDamageToAttacker);
     }
 
@@ -167,10 +167,12 @@ public class Combatant : MonoBehaviour {
     #region PostureBreaking
 
     void HandleBreakPosture() {
-        currentStatus = Status.BROKEN;
-        timeLeftBroken = postureBreakDuration;
-        onPostureBroken.Invoke();
-        executionMark.gameObject.SetActive(true);
+        if (currentStatus != Status.BROKEN) {
+            currentStatus = Status.BROKEN;
+            timeLeftBroken = postureBreakDuration;
+            onPostureBroken.Invoke();
+            executionMark.gameObject.SetActive(true);
+        }
     }
 
     void HandleUnbreakPosture() {
@@ -180,6 +182,7 @@ public class Combatant : MonoBehaviour {
     }
 
     void Die() {
+        currentStatus = Status.DEAD;
         onDie.Invoke();
         SetHP(maxHP);
         SetPosture(maxPosture);

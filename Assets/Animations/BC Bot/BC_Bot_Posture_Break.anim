@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player_Idle
+  m_Name: BC_Bot_Posture_Break
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -20,17 +20,9 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 21300000, guid: 36802c8785c233744a1970e223706be9, type: 3}
-    - time: 0.125
-      value: {fileID: 21300000, guid: d59f73ed801e7aa43a2902c2c1c0acda, type: 3}
-    - time: 0.25
-      value: {fileID: 21300000, guid: cab72555fae491141935df543b802b8e, type: 3}
-    - time: 0.375
-      value: {fileID: 21300000, guid: 85408158eb879224088880b60e9a64b9, type: 3}
+      value: {fileID: -1621886396, guid: 34adac8fc688d044eb25cc4003bb4133, type: 3}
     - time: 0.5
-      value: {fileID: 21300000, guid: 31108b401351920439e23d208185eb43, type: 3}
-    - time: 0.625
-      value: {fileID: 21300000, guid: 5613fda80704d894db033671399c8c3c, type: 3}
+      value: {fileID: -1700492904, guid: 34adac8fc688d044eb25cc4003bb4133, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -51,18 +43,14 @@ AnimationClip:
       isPPtrCurve: 1
       isIntCurve: 0
     pptrCurveMapping:
-    - {fileID: 21300000, guid: 36802c8785c233744a1970e223706be9, type: 3}
-    - {fileID: 21300000, guid: d59f73ed801e7aa43a2902c2c1c0acda, type: 3}
-    - {fileID: 21300000, guid: cab72555fae491141935df543b802b8e, type: 3}
-    - {fileID: 21300000, guid: 85408158eb879224088880b60e9a64b9, type: 3}
-    - {fileID: 21300000, guid: 31108b401351920439e23d208185eb43, type: 3}
-    - {fileID: 21300000, guid: 5613fda80704d894db033671399c8c3c, type: 3}
+    - {fileID: -1621886396, guid: 34adac8fc688d044eb25cc4003bb4133, type: 3}
+    - {fileID: -1700492904, guid: 34adac8fc688d044eb25cc4003bb4133, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.75
+    m_StopTime: 1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -82,8 +70,8 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0
-    functionName: ChangeStatus
+  - time: 1
+    functionName: get_isGrounded
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

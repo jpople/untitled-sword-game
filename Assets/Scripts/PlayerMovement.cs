@@ -11,6 +11,7 @@ public class PlayerMovement : PhysicsObject
     const float ATTACK_ANIM_DURATION = 0.8f;
 
     bool isAttacking;
+    bool isBlocking;
     Vector2 lastMovementInput;
 
     [SerializeField] AttackData firstAttack;
@@ -19,7 +20,7 @@ public class PlayerMovement : PhysicsObject
     [SerializeField] Animator animator;
 
     Combatant executionTarget;
-    Vector3 EXECUTION_OFFSET = new Vector3(0.5f, 0, 0);
+    float EXECUTION_X_OFFSET = 0.5f;
 
     public UnityEvent AttackWindup;
     public TextMeshProUGUI debugText;
@@ -39,8 +40,6 @@ public class PlayerMovement : PhysicsObject
         ExecutionTargetCheck();
         animator.SetFloat("Speed", Mathf.Abs(horizontalVelocity));
         animator.SetFloat("VertSpeed", verticalVelocity);
-
-        debugText.text = $"isAttacking: {isAttacking}\nmovementDirection: {movementDirection}";
     }
 
     private IEnumerator Attack() {
@@ -56,6 +55,7 @@ public class PlayerMovement : PhysicsObject
     #region GameLogic
 
     void CheckHitbox() {
+        // update this to use LayerMasks now that we know what those are
         List<Collider2D> results = new List<Collider2D>();
         ContactFilter2D noFilter = new ContactFilter2D();
         int allHitEntities = attackHitbox.OverlapCollider(noFilter.NoFilter(), results);
@@ -68,6 +68,7 @@ public class PlayerMovement : PhysicsObject
                         if (enemy.currentStatus == Combatant.Status.PARRYING) {
                             HandleGetParried(firstAttack);
                         }
+                        // this is pretty ugly, huh
                         if (transform.localScale.x == -1) {
                             firstAttack.force.x = -firstAttack.force.x;
                             enemy.HandleReceiveAttack(firstAttack);
@@ -84,7 +85,9 @@ public class PlayerMovement : PhysicsObject
 
     void ExecutionTargetCheck() {
         LayerMask mask = LayerMask.GetMask("Enemy");
-        RaycastHit2D h = Physics2D.Raycast(transform.position, new Vector2(transform.localScale.x, 0), 1f, mask);
+        Vector3 bottom = new Vector3(transform.position.x, GetComponent<BoxCollider2D>().bounds.min.y, transform.position.z);
+        Vector3 mid = transform.position; 
+        RaycastHit2D h = Physics2D.Raycast(bottom, new Vector2(transform.localScale.x, 0), 1f, mask);
         if (h.collider != null) {
             Combatant frontEnemy = h.collider.gameObject.GetComponent<Combatant>();
             if (frontEnemy.currentStatus == Combatant.Status.BROKEN) {
@@ -127,7 +130,8 @@ public class PlayerMovement : PhysicsObject
     }
 
     public void HandleExecute() {
-        transform.position = executionTarget.gameObject.transform.position - (EXECUTION_OFFSET * transform.localScale.x);
+        float destinationX = executionTarget.gameObject.transform.position.x - (EXECUTION_X_OFFSET * transform.localScale.x);
+        transform.position = new Vector3(destinationX, transform.position.y, transform.position.z);
         animator.CrossFade("Player_Execute", 0.0f);
     }
 
@@ -145,7 +149,7 @@ public class PlayerMovement : PhysicsObject
     }
 
     public void HandleMove() {
-        if(!isAttacking) {
+        if(!isAttacking && !isBlocking) {
             if (lastMovementInput.x > 0.1) {
                 movementDirection = 1;
             }
@@ -156,6 +160,16 @@ public class PlayerMovement : PhysicsObject
                 movementDirection = 0;
             }
         }
+    }
+
+    public void HandleBlock() {
+        animator.CrossFade("Player_Block", 0.0f);
+        isBlocking = true;
+    }
+
+    public void HandleLeaveBlock() {
+        animator.CrossFade("Player_Idle", 0f);
+        isBlocking = false;
     }
     
     #endregion
@@ -177,6 +191,15 @@ public class PlayerMovement : PhysicsObject
     public void OnAttackInput(InputAction.CallbackContext c) {
         if (c.started) {
             HandleAttack();
+        }
+    }
+
+    public void OnBlockInput(InputAction.CallbackContext c) {
+        if (c.started) {
+            HandleBlock();
+        }
+        if (c.canceled) {
+            HandleLeaveBlock();
         }
     }
 

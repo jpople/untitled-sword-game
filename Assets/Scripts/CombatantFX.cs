@@ -8,12 +8,20 @@ public class CombatantFX : MonoBehaviour
     [SerializeField] AudioClip hitSoundDefault;
     [SerializeField] AudioClip hitSoundBlocked;
     [SerializeField] AudioClip hitSoundParried;
+    [SerializeField] AudioClip postureBreakSound;
+    [SerializeField] AudioClip getExecutedSound;
 
     [SerializeField] AudioClip footstepSound;
 
+    [SerializeField] AnimationClip idleAnimation;
     [SerializeField] AnimationClip hitAnimation;
     [SerializeField] AnimationClip blockAnimation;
     [SerializeField] AnimationClip deathAnimation;
+    [SerializeField] AnimationClip postureBreakAnimation;
+
+    [SerializeField] ParticleSystem ps;
+
+    [SerializeField] GameObject burst;
 
     AudioSource source;
     Animator anim;
@@ -30,6 +38,7 @@ public class CombatantFX : MonoBehaviour
         character.onBlock.AddListener(HandleBlock);
         character.onParry.AddListener(HandleParry);
         character.onDie.AddListener(HandleDie);
+        character.onPostureBroken.AddListener(HandleBreakPosture);
         GetComponent<PhysicsObject>().onLand.AddListener(PlayFootstepSound);
     }
 
@@ -47,8 +56,13 @@ public class CombatantFX : MonoBehaviour
     }
 
     void HandleDie() {
-        source.PlayOneShot(hitSoundDefault);
-        anim.CrossFade(deathAnimation.name, 0);
+        source.PlayOneShot(getExecutedSound);
+        anim.CrossFade(deathAnimation.name, 0f);
+    }
+
+    void HandleBreakPosture() {
+        source.PlayOneShot(postureBreakSound);
+        anim.CrossFade(postureBreakAnimation.name, 0f);
     }
 
     void PlayFootstepSound() {
